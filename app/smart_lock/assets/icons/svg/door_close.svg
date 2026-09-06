@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- 门关图标 -->
+  <defs>
+    <style>
+      .door-frame { fill: none; stroke: #ffffff; stroke-width: 3; stroke-linejoin: round; }
+      .door-panel { fill: #ffffff; opacity: 0.8; }
+    </style>
+  </defs>
+
+  <!-- 门框 -->
+  <rect class="door-frame" x="8" y="4" width="32" height="40" rx="2" ry="2"/>
+
+  <!-- 门板 -->
+  <rect class="door-panel" x="12" y="8" width="24" height="36" rx="1" ry="1"/>
+
+  <!-- 门把手 -->
+  <circle cx="30" cy="28" r="2" fill="#000000"/>
+</svg>

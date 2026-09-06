@@ -1,0 +1,57 @@
+#
+# Smart Lock application
+#
+
+config SMART_LOCK
+	bool "Smart Lock Application"
+	default n
+	depends on LVGL
+	---help---
+		Enable the Smart Lock application with LVGL UI.
+
+if SMART_LOCK
+
+config SMART_LOCK_PROGNAME
+	string "Program name"
+	default "smart_lock"
+	---help---
+		This is the name of the program that will be used when the
+		NSH ELF program is installed.
+
+config SMART_LOCK_PRIORITY
+	int "Smart Lock task priority"
+	default 100
+	---help---
+		The priority of the Smart Lock task.
+
+config SMART_LOCK_STACKSIZE
+	int "Smart Lock stack size"
+	default 8192
+	---help---
+		The stack size of the Smart Lock task.
+
+config SMART_LOCK_DEFAULT_CLOSE_TIME
+	int "Default auto close time (seconds)"
+	default 10
+	---help---
+		The default time in seconds before the door automatically closes.
+
+config SMART_LOCK_DEFAULT_VOLUME
+	int "Default voice volume (0-100)"
+	default 80
+	---help---
+		The default voice volume level.
+
+config SMART_LOCK_DEFAULT_BRIGHTNESS
+	int "Default screen brightness (0-100)"
+	default 100
+	---help---
+		The default screen brightness level.
+
+config SMART_LOCK_ANTIPINCH
+	bool "Enable antipinch function"
+	default y
+	---help---
+		Enable the antipinch safety function.
+
+endif # SMART_LOCK

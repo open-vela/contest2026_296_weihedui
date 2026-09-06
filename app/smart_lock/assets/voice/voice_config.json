@@ -1,0 +1,86 @@
+{
+  "voice_specs": {
+    "sample_rate": 16000,
+    "bit_depth": 16,
+    "channels": 1,
+    "format": "pcm"
+  },
+  "tts_settings": {
+    "provider": "local",
+    "speed": 5,
+    "pitch": 5,
+    "volume": 5,
+    "voice_type": 0
+  },
+  "voice_files": {
+    "door_status": {
+      "door_opened.pcm": {
+        "text": "门已打开",
+        "duration": 1.0,
+        "priority": 1
+      },
+      "door_closed.pcm": {
+        "text": "门已关闭",
+        "duration": 1.0,
+        "priority": 1
+      },
+      "door_locked.pcm": {
+        "text": "门已锁定",
+        "duration": 1.0,
+        "priority": 1
+      },
+      "door_unlocked.pcm": {
+        "text": "门已解锁",
+        "duration": 1.0,
+        "priority": 1
+      }
+    },
+    "warnings": {
+      "anti_pinch.pcm": {
+        "text": "检测到障碍物，请注意安全",
+        "duration": 2.0,
+        "priority": 3
+      },
+      "timeout_warning.pcm": {
+        "text": "门将在{N}秒后自动关闭",
+        "duration": 2.0,
+        "priority": 2,
+        "parameters": ["N"]
+      },
+      "abnormal_open.pcm": {
+        "text": "检测到异常开门",
+        "duration": 1.5,
+        "priority": 3
+      },
+      "low_battery.pcm": {
+        "text": "电池电量低，请及时更换",
+        "duration": 2.0,
+        "priority": 2
+      },
+      "tamper_alarm.pcm": {
+        "text": "检测到异常，请注意安全",
+        "duration": 2.0,
+        "priority": 3
+      }
+    },
+    "welcome": {
+      "welcome_home.pcm": {
+        "text": "欢迎回家",
+        "duration": 1.0,
+        "priority": 1
+      },
+      "goodbye.pcm": {
+        "text": "再见，请注意安全",
+        "duration": 1.5,
+        "priority": 1
+      }
+    }
+  },
+  "playback_settings": {
+    "default_volume": 80,
+    "max_volume": 100,
+    "min_volume": 0,
+    "fade_in_time": 100,
+    "fade_out_time": 100
+  }
+}

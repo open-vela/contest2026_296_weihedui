@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- WiFi 图标 -->
+  <defs>
+    <style>
+      .wifi { fill: none; stroke: #ffffff; stroke-width: 2; stroke-linecap: round; }
+      .wifi-dot { fill: #ffffff; }
+    </style>
+  </defs>
+
+  <!-- WiFi 信号弧线 -->
+  <path class="wifi" d="M4 12 C8 8 24 8 28 12"/>
+  <path class="wifi" d="M8 16 C11 13 21 13 24 16"/>
+  <path class="wifi" d="M12 20 C14 18 18 18 20 20"/>
+
+  <!-- WiFi 中心点 -->
+  <circle class="wifi-dot" cx="16" cy="24" r="2"/>
+</svg>
