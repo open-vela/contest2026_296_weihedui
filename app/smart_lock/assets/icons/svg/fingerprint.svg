@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- 指纹图标 -->
+  <defs>
+    <style>
+      .fingerprint { fill: none; stroke: #ffffff; stroke-width: 1.5; stroke-linecap: round; }
+    </style>
+  </defs>
+
+  <!-- 指纹线条 -->
+  <path class="fingerprint" d="M16 4 C10 4 4 10 4 16 C4 22 10 28 16 28"/>
+  <path class="fingerprint" d="M16 8 C12 8 8 12 8 16 C8 20 12 24 16 24"/>
+  <path class="fingerprint" d="M16 12 C14 12 12 14 12 16 C12 18 14 20 16 20"/>
+  <path class="fingerprint" d="M16 16 C15 16 14 17 14 18"/>
+
+  <!-- 指纹外圈 -->
+  <circle cx="16" cy="16" r="12" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+</svg>

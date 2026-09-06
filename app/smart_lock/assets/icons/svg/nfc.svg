@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- NFC 图标 -->
+  <defs>
+    <style>
+      .nfc { fill: none; stroke: #ffffff; stroke-width: 2; stroke-linecap: round; }
+      .nfc-dot { fill: #ffffff; }
+    </style>
+  </defs>
+
+  <!-- NFC 信号线 -->
+  <path class="nfc" d="M8 8 C12 4 20 4 24 8"/>
+  <path class="nfc" d="M10 12 C13 9 19 9 22 12"/>
+  <path class="nfc" d="M12 16 C14 14 18 14 20 16"/>
+
+  <!-- NFC 中心 -->
+  <circle class="nfc-dot" cx="16" cy="20" r="3"/>
+
+  <!-- NFC 底部 -->
+  <path class="nfc" d="M16 23 L16 28"/>
+</svg>

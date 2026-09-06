@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- 历史记录图标 -->
+  <defs>
+    <style>
+      .clock { fill: none; stroke: #ffffff; stroke-width: 2; stroke-linecap: round; }
+      .clock-hand { fill: none; stroke: #ffffff; stroke-width: 2; stroke-linecap: round; }
+      .arrow { fill: none; stroke: #ffffff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- 时钟外圈 -->
+  <circle class="clock" cx="16" cy="16" r="12"/>
+
+  <!-- 时钟指针 -->
+  <line class="clock-hand" x1="16" y1="16" x2="16" y2="10"/>
+  <line class="clock-hand" x1="16" y1="16" x2="20" y2="16"/>
+
+  <!-- 时钟中心 -->
+  <circle cx="16" cy="16" r="1.5" fill="#ffffff"/>
+
+  <!-- 返回箭头 -->
+  <path class="arrow" d="M4 16 L8 12 L8 14 L12 14 L12 18 L8 18 L8 20 Z"/>
+</svg>

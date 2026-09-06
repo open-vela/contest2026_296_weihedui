@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- 电池图标 -->
+  <defs>
+    <style>
+      .battery-body { fill: none; stroke: #ffffff; stroke-width: 2; stroke-linejoin: round; }
+      .battery-level { fill: #00ff00; }
+      .battery-tip { fill: #ffffff; }
+    </style>
+  </defs>
+
+  <!-- 电池主体 -->
+  <rect class="battery-body" x="4" y="10" width="22" height="12" rx="2" ry="2"/>
+
+  <!-- 电池电量 -->
+  <rect class="battery-level" x="6" y="12" width="18" height="8" rx="1" ry="1"/>
+
+  <!-- 电池正极 -->
+  <rect class="battery-tip" x="26" y="14" width="3" height="4" rx="1" ry="1"/>
+</svg>
