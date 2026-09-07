@@ -3,41 +3,19 @@
   "team_id": "contest2026_296_weihedui",
   "github_login": "JiaYi-Tang1024",
   "generator": "claude-code-collector@1.2.0",
-  "updated_at": "2026-09-07T13:49:45.809Z",
+  "updated_at": "2026-09-07T21:58:00.000Z",
   "sessions": [
     {
       "session_id": "9db242fb-bdb7-4b57-a7c8-e91094468b02",
       "tool": "claude-code",
       "started_at": "2026-09-07T13:47:30.833Z",
-      "last_event_at": "2026-09-07T13:49:45.754Z",
-      "event_count": 988,
-      "raw_event_count": 1268,
+      "last_event_at": "2026-09-07T13:55:53.203Z",
+      "event_count": 1040,
+      "raw_event_count": 1344,
       "file_path": "logs/JiaYi-Tang1024/2026-09-07/claude-code__9db242fb-bdb7-4b57-a7c8-e91094468b02.jsonl",
       "collection_mode": "cli",
       "health": "ok",
       "model": "deepseek-v4-flash"
-    },
-    {
-      "session_id": "3f102b3a-0b68-4a58-81bc-5e071f945c51",
-      "tool": "claude-code",
-      "started_at": "2026-09-07T13:49:45.619Z",
-      "last_event_at": "2026-09-07T13:49:45.619Z",
-      "event_count": 3,
-      "raw_event_count": 6,
-      "file_path": "logs/JiaYi-Tang1024/2026-09-07/claude-code__3f102b3a-0b68-4a58-81bc-5e071f945c51.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
-      "session_id": "798ad9e4-c89c-4451-ba98-5dc58680160c",
-      "tool": "claude-code",
-      "started_at": "2026-09-07T13:49:45.652Z",
-      "last_event_at": "2026-09-07T13:49:45.652Z",
-      "event_count": 3,
-      "raw_event_count": 6,
-      "file_path": "logs/JiaYi-Tang1024/2026-09-07/claude-code__798ad9e4-c89c-4451-ba98-5dc58680160c.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
     },
     {
       "session_id": "a4b2be61-6710-4ce7-98c7-360d159040e2",
