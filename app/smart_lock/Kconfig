@@ -1,0 +1,44 @@
+# app/smart_lock/Kconfig
+#
+# 智锁卫士应用配置
+#
+# Copyright (C) 2026 weihedui (Team 296)
+# SPDX-License-Identifier: Apache-2.0
+
+config SMART_LOCK
+	bool "Smart Lock Guardian Application"
+	default n
+	---help---
+		Enable the Smart Lock Guardian application based on
+		millimeter-wave radar and door sensor.
+
+if SMART_LOCK
+
+config SMART_LOCK_RADAR
+	bool "Radar Driver Support"
+	default y
+	---help---
+		Enable HLK-LD2410 millimeter-wave radar driver support.
+
+config SMART_LOCK_DOOR_SENSOR
+	bool "Door Sensor Support"
+	default y
+	---help---
+		Enable door magnetic sensor driver support.
+
+config SMART_LOCK_AUTO_LOCK
+	bool "Auto Lock Feature"
+	default y
+	depends on SMART_LOCK_DOOR_SENSOR
+	---help---
+		Enable automatic door locking after timeout.
+
+config SMART_LOCK_AUTO_LOCK_TIMEOUT
+	int "Auto Lock Timeout (seconds)"
+	default 10
+	range 1 300
+	depends on SMART_LOCK_AUTO_LOCK
+	---help---
+		Timeout in seconds before automatic door locking.
+
+endif # SMART_LOCK

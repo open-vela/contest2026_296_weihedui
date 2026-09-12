@@ -1,0 +1,15 @@
+# app/smart_lock/Make.defs
+#
+# 智锁卫士应用构建配置
+#
+# Copyright (C) 2026 weihedui (Team 296)
+# SPDX-License-Identifier: Apache-2.0
+
+ifeq ($(CONFIG_SMART_LOCK),y)
+  CSRCS += src/radar_driver.c
+  CSRCS += src/door_sensor.c
+endif
+
+DEPPATH += --dep-path src
+VPATH += :src
+CFLAGS += ${INCDIR_PREFIX}$(APPDIR)/smart_lock/include
