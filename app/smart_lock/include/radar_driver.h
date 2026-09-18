@@ -70,7 +70,7 @@ typedef struct
   uint16_t target_distance;    /* 目标距离 (cm) */
   uint8_t  energy_value;       /* 能量值 */
   uint32_t timestamp;          /* 时间戳 */
-} radar_result_t;
+} radar_driver_result_t;
 
 /* 环形缓冲区结构体 */
 
@@ -84,7 +84,7 @@ typedef struct
 
 /* 回调函数类型 */
 
-typedef void (*radar_callback_t)(const radar_result_t *result);
+typedef void (*radar_callback_t)(const radar_driver_result_t *result);
 
 /****************************************************************************
  * Public Function Prototypes
@@ -114,7 +114,7 @@ int radar_register_callback(radar_callback_t callback);
  * @return 0 成功, 负值失败
  */
 
-int radar_get_status(radar_result_t *result);
+int radar_driver_get_status(radar_driver_result_t *result);
 
 /**
  * @brief 解析雷达数据帧

@@ -165,13 +165,13 @@ int tool_system_status(int argc, char **argv)
 {
     door_status_t door_status;
     radar_result_t radar_status;
-    motor_status_t motor_status;
+    motor_state_t motor_state;
     bool ble_connected;
 
     /* 获取各模块状态 */
     door_sensor_get_status(&door_status);
     radar_get_status(&radar_status);
-    motor_get_status(&motor_status);
+    motor_state = motor_get_state();
     ble_connected = ble_is_connected();
 
     printf("{\n");
@@ -189,10 +189,15 @@ int tool_system_status(int argc, char **argv)
            radar_status.state == RADAR_STATE_MOVING ? "moving" : "stationary");
     printf("  },\n");
     printf("  \"motor\": {\n");
+    printf("    \"state\": \"%s\",\n", motor_state_to_string(motor_state));
     printf("    \"running\": %s,\n",
-           motor_status.running ? "true" : "false");
+           (motor_state == MOTOR_STATE_OPENING ||
+            motor_state == MOTOR_STATE_CLOSING ||
+            motor_state == MOTOR_STATE_LOCKING) ? "true" : "false");
     printf("    \"direction\": \"%s\"\n",
-           motor_status.direction == MOTOR_DIR_OPEN ? "opening" : "closing");
+           motor_state == MOTOR_STATE_OPENING ? "opening" :
+           motor_state == MOTOR_STATE_CLOSING ? "closing" :
+           motor_state == MOTOR_STATE_LOCKING ? "locking" : "idle");
     printf("  },\n");
     printf("  \"ble\": {\n");
     printf("    \"connected\": %s\n", ble_connected ? "true" : "false");

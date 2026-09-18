@@ -26,7 +26,8 @@ typedef enum {
     MOTOR_CMD_CLOSE,          /**< 关门命令 */
     MOTOR_CMD_LOCK,           /**< 锁门命令 */
     MOTOR_CMD_STOP,           /**< 停止命令 */
-    MOTOR_CMD_EMERGENCY_STOP  /**< 紧急停止命令 */
+    MOTOR_CMD_EMERGENCY_STOP, /**< 紧急停止命令 */
+    MOTOR_CMD_UNLOCK          /**< 解锁命令（集成补充：复用开门电机）*/
 } motor_cmd_t;
 
 /**
