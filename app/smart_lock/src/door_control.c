@@ -299,6 +299,7 @@ int motor_control(motor_cmd_t cmd)
 
     switch (cmd) {
     case MOTOR_CMD_OPEN:
+    case MOTOR_CMD_UNLOCK:  /* 集成补充：解锁复用开门电机 */
         /* 停止其他电机 */
         gpio_write(g_motor_ctx.config.close_gpio_pin, GPIO_LOW);
         gpio_write(g_motor_ctx.config.lock_gpio_pin, GPIO_LOW);

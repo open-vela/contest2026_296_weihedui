@@ -1,15 +1,22 @@
+############################################################################
 # app/smart_lock/Make.defs
 #
-# 智锁卫士应用构建配置
+# 智锁卫士 - Team 296 (weihedui)
+#
+# 集成修复说明（2026-09-18）：
+#   原内容用的是"驱动/库"写法（CSRCS += ... DEPPATH ... VPATH ...），
+#   而不是"应用"写法，因此本应用从未注册进 CONFIGURED_APPS，构建系统
+#   根本不会编译它。而且原内容只列了 2 个源文件（radar_driver.c /
+#   door_sensor.c），漏掉了 ble_service.c / door_control.c / safety.c /
+#   agent_tools.c。
+#
+#   源文件清单现在由 Makefile 的 CSRCS / MAINSRC 统一管理，本文件只负责
+#   把应用目录注册进构建树。
 #
 # Copyright (C) 2026 weihedui (Team 296)
 # SPDX-License-Identifier: Apache-2.0
+############################################################################
 
-ifeq ($(CONFIG_SMART_LOCK),y)
-  CSRCS += src/radar_driver.c
-  CSRCS += src/door_sensor.c
+ifneq ($(CONFIG_SMART_LOCK),)
+CONFIGURED_APPS += $(APPDIR)/packages/demos/contest2026_296_smart_lock
 endif
-
-DEPPATH += --dep-path src
-VPATH += :src
-CFLAGS += ${INCDIR_PREFIX}$(APPDIR)/smart_lock/include

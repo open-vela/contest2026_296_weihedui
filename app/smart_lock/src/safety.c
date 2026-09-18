@@ -22,6 +22,7 @@
 
 #include "safety.h"
 #include "door_control.h"
+#include "radar_driver.h"   /* 集成修复：防夹逻辑改为读取真实雷达驱动 */
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -83,23 +84,45 @@ static int radar_read_data(radar_result_t *result)
         return -1;
     }
 
-    /* TODO: 替换为实际的雷达驱动调用 */
-    /* 模拟随机雷达数据 */
-    static uint32_t call_count = 0;
-    call_count++;
+    /* 集成修复 (2026-09-18)
+     *
+     * 原实现此处写着 "TODO: 替换为实际的雷达驱动调用"，并用
+     * call_count % 100 < 10 伪造雷达数据。后果是防夹保护、主循环的自动
+     * 关门判定、以及 agent_tools.c 上报给 AI Agent 的雷达状态，全部建立
+     * 在假数据之上 —— 防夹保护实际上永远不会对真实障碍起作用。
+     *
+     * 现改为调用底层驱动 radar_driver_get_status()，并做字段映射：
+     *   驱动层 radar_driver_result_t   ->   应用层 radar_result_t
+     *     target_detected / motion_state  ->   state
+     *     target_distance                 ->   distance
+     *     energy_value                    ->   energy
+     *     timestamp                       ->   timestamp
+     */
 
-    result->timestamp = time(NULL);
+    radar_driver_result_t raw;
 
-    /* 模拟：每100次调用检测到一次目标 */
-    if (call_count % 100 < 10) {
+    if (radar_driver_get_status(&raw) < 0) {
+        return -1;
+    }
+
+    if (!raw.target_detected) {
+        result->state = RADAR_STATE_NO_TARGET;
+    } else if (raw.motion_state == RADAR_MOTION_MOVING) {
         result->state = RADAR_STATE_MOVING;
-        result->distance_cm = 50;
-        result->energy = 80;
+    } else if (raw.motion_state == RADAR_MOTION_STATIONARY) {
+        result->state = RADAR_STATE_STATIONARY;
     } else {
         result->state = RADAR_STATE_NO_TARGET;
-        result->distance_cm = 0;
-        result->energy = 0;
     }
+
+    result->distance  = raw.target_distance;
+    result->energy    = raw.energy_value;
+    result->timestamp = raw.timestamp ? raw.timestamp : (uint32_t)time(NULL);
+
+    /* HLK-LD2410 是单区域雷达，驱动结果里没有内外侧信息；内外侧判定
+     * 需要第二路雷达或 region 帧支持，这里暂固定为室内侧。 */
+
+    result->zone = RADAR_ZONE_INDOOR;
 
     return 0;
 }
@@ -144,13 +167,13 @@ static void *safety_task(void *arg)
             radar.state == RADAR_STATE_STATIONARY) {
 
             /* 检查是否在检测范围内 */
-            if (radar.distance_cm <= g_safety_ctx.config.detection_range_cm) {
+            if (radar.distance <= g_safety_ctx.config.detection_range_cm) {
                 g_safety_ctx.detect_count++;
 
                 printf("[SAFETY] Target detected! Count: %d/%d, Distance: %d cm\n",
                        g_safety_ctx.detect_count,
                        g_safety_ctx.config.anti_pinch_threshold,
-                       radar.distance_cm);
+                       radar.distance);
 
                 /* 连续检测次数达到阈值 */
                 if (g_safety_ctx.detect_count >= g_safety_ctx.config.anti_pinch_threshold) {

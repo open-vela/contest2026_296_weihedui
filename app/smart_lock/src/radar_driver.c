@@ -50,7 +50,7 @@ typedef struct
   pthread_t        receive_thread;   /* 接收线程 */
   pthread_mutex_t  mutex;            /* 互斥锁 */
   ring_buffer_t    ring_buffer;      /* 环形缓冲区 */
-  radar_result_t   last_result;      /* 最近一次解析结果 */
+  radar_driver_result_t   last_result;      /* 最近一次解析结果 */
   radar_callback_t callback;         /* 回调函数 */
   parse_state_t    parse_state;      /* 帧解析状态机状态 */
 } radar_context_t;
@@ -479,7 +479,7 @@ int radar_register_callback(radar_callback_t callback)
  * @return 0 成功, 负值失败
  */
 
-int radar_get_status(radar_result_t *result)
+int radar_driver_get_status(radar_driver_result_t *result)
 {
   if (!g_radar_ctx.initialized || result == NULL)
     {
@@ -487,7 +487,7 @@ int radar_get_status(radar_result_t *result)
     }
 
   pthread_mutex_lock(&g_radar_ctx.mutex);
-  memcpy(result, &g_radar_ctx.last_result, sizeof(radar_result_t));
+  memcpy(result, &g_radar_ctx.last_result, sizeof(radar_driver_result_t));
   pthread_mutex_unlock(&g_radar_ctx.mutex);
 
   return 0;
