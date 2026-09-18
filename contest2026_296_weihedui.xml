@@ -10,6 +10,7 @@
 
   <project path="contest2026_296_weihedui" name="contest2026_296_weihedui">
     <linkfile src="app/hello_app" dest="packages/demos/contest2026_296_hello_app"/>
+    <linkfile src="app/smart_lock"          dest="packages/demos/contest2026_296_smart_lock"/>
     <linkfile src="quickapp/hello_quickapp" dest="packages/apps/contest2026_296_hello_quickapp"/>
     <linkfile src="board/contest_board" dest="vendor/openvela/boards/contest2026_296_board"/>
   </project>
