@@ -55,7 +55,7 @@ contest2026_296_weihedui/
 │       └── agent_main.c            # agent 命令的解析与分发
 ├── board/contest_board/
 │   └── configs/nsh/defconfig       # 板级配置：黄山派原始 defconfig + CONFIG_SMART_LOCK*
-├── docs/                           # 各模块设计文档（驱动/控制/通信）
+├── docs/                           # 各模块设计文档（驱动/控制/通信/硬件）
 ├── logs/                           # AI Coding 日志
 ├── quickapp/hello_quickapp/        # 组委会骨架，本作品未使用
 └── contest2026_296_weihedui.xml    # repo manifest，用 <linkfile> 把上面目录软链进编译树
@@ -253,7 +253,7 @@ nsh> agent help                                # 用法
 - **需求与接口先行**：先由 AI 阅读 `docs/` 下的模块设计文档，梳理出各模块间的
   接口契约，再据此核对代码实现，发现并补齐了多处缺失的模块（统一头文件
   `smart_lock.h`、应用入口 `smart_lock_main.c`、构建脚本 `CMakeLists.txt` 等都属此类）。
-- **死代码排查**：AI 通过分析调用图发现 `agent_tools.c` 的六个工具函数在全仓库
+- **死代码排查**：AI 通过分析调用图发现 `agent_tools.c` 的五个工具函数在全仓库
   **没有任何调用者**，并据此补写了 `agent_main.c` 把 `docs/communication/agent_guide.md`
   中约定的 `agent <tool>` 命令真正实现出来——这五个函数由此从「被链接器
   `--gc-sections` 丢弃」变为真实进入镜像（可用 `System.map` 前后对比验证）。
