@@ -3,20 +3,19 @@
   "team_id": "contest2026_296_weihedui",
   "github_login": "ziqi229",
   "generator": "claude-code-collector@1.2.0",
-  "updated_at": "2026-09-19T12:25:29.441Z",
+  "updated_at": "2026-09-19T13:01:14.795Z",
   "sessions": [
     {
       "session_id": "8187a9cf-9a59-4fc5-b7db-7cce22ed0630",
       "tool": "claude-code",
       "started_at": "2026-08-15T15:31:15.898Z",
-      "last_event_at": "2026-09-19T12:19:32.492Z",
-      "event_count": 7381,
-      "raw_event_count": 12430,
+      "last_event_at": "2026-09-19T12:53:20.734Z",
+      "event_count": 7539,
+      "raw_event_count": 12695,
       "file_path": "logs/ziqi229/2026-09-19/claude-code__8187a9cf-9a59-4fc5-b7db-7cce22ed0630.jsonl",
       "collection_mode": "cli",
       "health": "ok",
-      "model": "deepseek-v4-flash",
-      "redacted_count_total": 1
+      "model": "deepseek-v4-flash"
     }
   ]
 }
