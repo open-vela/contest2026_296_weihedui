@@ -31,7 +31,14 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define UART_DEVICE_PATH    "/dev/ttyS1"  /* UART 设备路径 */
+/* 2026-09-19 硬件实测修正：黄山派上 UART1 已被控制台占用（注册为 /dev/console），
+ * 第二个 UART 实例注册为 /dev/ttyS0。实机 `ls /dev` 中的串口节点只有
+ * console / ttyS0 / ttyACM0，原先写死的 /dev/ttyS1 并不存在，open() 返回
+ * -ENOENT，radar_init() 必然失败（实测日志 "Failed to open UART device:
+ * Error 2"）。
+ */
+
+#define UART_DEVICE_PATH    "/dev/ttyS0"  /* UART 设备路径（黄山派实测值） */
 #define UART_BAUD_RATE      B115200       /* 波特率 */
 #define RECEIVE_THREAD_STACK_SIZE  4096   /* 接收线程栈大小 */
 #define RECEIVE_TIMEOUT_MS   100          /* 接收超时时间 */

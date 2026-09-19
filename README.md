@@ -166,10 +166,39 @@ nsh> agent help                                # 用法
 
 1. **电机/蜂鸣器 GPIO 引脚号是占位值。** `src/smart_lock_main.c` 中的
    `g_default_motor_config` 四个引脚号目前均为 `0`。真实接线确定后必须改成黄山派上
-   实际使用的引脚号，否则电机与蜂鸣器不会动作。仓库中雷达、门磁、电机各驱动层的
-   读写与状态机逻辑本身是完整的，可在接线后直接生效。
+   实际使用的引脚号，否则电机与蜂鸣器不会动作。
 
-2. **BLE 不随镜像出厂。** `src/ble_service.c` 中完整的 BLE GATT 服务（服务 `0x1820`、
+   另需说明：`src/door_control.c` 中的 `gpio_write()` 是一个**只打印日志的桩函数**
+   （见该文件顶部「GPIO模拟定义」注释），并不真正操作硬件。因此电机状态机、超时保护、
+   防夹联动这些逻辑可以在没有电机的情况下被完整演示和验证，但**不会驱动真实电机**
+   ——这一点比「引脚号是占位值」更根本。
+
+2. **门磁驱动无法工作（Linux sysfs 接口误移植到 NuttX，本次未修复）。** 实机启动
+   `smart_lock` 时门磁初始化必然失败：
+
+   ```text
+   Failed to open GPIO export: Error 2
+   Failed to initialize GPIO
+   [MAIN] door_sensor_init failed: -2
+   ```
+
+   原因是 `src/door_sensor.c` 通过 `/sys/class/gpio/{export,direction,value,edge}`
+   操作 GPIO——这是 **Linux sysfs 接口，NuttX 没有实现**。板上 `ls /sys` 直接返回
+   `stat failed: 2`，`/sys` 整个路径都不存在。因此它**无论是否接线都不可能工作**，
+   与「接线后即可生效」是不同性质的问题。
+
+   正确做法是改用 NuttX 的 GPIO 字符驱动：板上实测存在 `/dev/gpio0`、`/dev/gpio1`、
+   `/dev/gpio2`（对应 `CONFIG_DEV_GPIO=y`），配合 `GPIOIOC_*` ioctl 完成配置、读写
+   与边沿事件等待。
+
+   **本次未改写的原因**：`include/door_sensor.h` 中的 `DOOR_SENSOR_GPIO_PIN` 目前
+   同样是无意义的占位值 `0`，且没有实物门磁可接。改写之后无法在硬件上验证其正确性，
+   只会把一个「确定失败」换成一个「未经验证」；这与本作品其余部分「每一步都要有可
+   复核的证据」的做法不一致，故如实记录，留待接线后连同引脚号一并处理。
+   `agent door_sensor_read` 当前返回 `{"error":"door sensor read failed"}` 即源于此，
+   而非接口约定问题。
+
+3. **BLE 不随镜像出厂。** `src/ble_service.c` 中完整的 BLE GATT 服务（服务 `0x1820`、
    门状态特征 `0x2B20` 读+通知、控制特征 `0x2B21` 写）代码是完整的，但被
    `#if defined(CONFIG_BT) && defined(CONFIG_UART_BTH4)` 门控；出厂 defconfig 中
    **`CONFIG_UART_BTH4` 未开启**，因此实际编译进去的是占位实现。
@@ -187,7 +216,7 @@ nsh> agent help                                # 用法
    cmake_out/contest2026_296_board_nsh` 全新构建，避免 CMake 配置缓存不刷新）。
    注意需先解决上述设备对象缺失问题。
 
-3. **触摸屏当前不可用（I2C 无器件应答）。** 板载触摸控制器为 FT6146，接在 I2C 上。
+4. **触摸屏当前不可用（I2C 无器件应答）。** 板载触摸控制器为 FT6146，接在 I2C 上。
    实测两条 I2C 总线都能正常注册（`i2c bus` 显示 Bus 0 / Bus 1 均为 YES），但总线上
    **没有任何器件应答**：
 
@@ -208,7 +237,7 @@ nsh> agent help                                # 用法
    相关代码位于 `vendor/sifli/`（生产仓库，受零改动约束），本作品无法从应用侧修复，
    因此如实记录，未做规避性伪装。
 
-4. **`lcdtest` 是诊断命令，不是产品功能。** 它（`src/lcdtest.c`）用于在硬件上验证
+5. **`lcdtest` 是诊断命令，不是产品功能。** 它（`src/lcdtest.c`）用于在硬件上验证
    第五节所述的驱动缺陷：依次全屏刷红/绿/蓝/白/黑、画嵌套矩形、再做一次全屏更新，
    每步之间暂停 2 秒；`lcdtest hold` 则停在最后一帧 60 秒便于拍照。保留它是因为
    它是上面那条结论的**可复现证据**，评委可用它独立验证「全宽更新可靠、局部更新失效」。
@@ -236,6 +265,13 @@ nsh> agent help                                # 用法
   「非全宽区域的更新不会到达屏幕」。随后 AI 据此把规避策略（只做全宽更新）写进正式的
   `display.c`，并调好了刷新节奏（1 Hz + 10 秒心跳）。整个过程中 AI 的假设被硬件实测
   否定过不止一次（例如曾误判引脚复用宏的桥接问题），这些弯路都保留在日志里。
+- **上机实测推翻文档里的乐观结论**：README 早期版本在「已知限制」里写着「雷达、门磁
+  各驱动层逻辑完整，接线后即可生效」。AI 在实机上跑 `smart_lock &` 后，启动日志直接
+  打出 `radar_init failed: -2` 与 `door_sensor_init failed: -2`，并进一步定位到两者
+  根因**并不相同**：雷达是把设备路径写死成本板不存在的 `/dev/ttyS1`（改一行即可，
+  已修复并重新烧录验证），门磁则是把 Linux sysfs 接口用在了 NuttX 上（需重新移植）。
+  据此改正了文档中被高估的那句话、新增一条已知限制。这类「文档说得好、硬件不认账」
+  的偏差，只有真实上机才会暴露。
 - **规则合规性核查**：由 AI 通读大赛《参赛代码提交指南》，确认「生产仓库零改动」的
   边界，设计出只用**一个新增板级配置文件**完成板级配置、且不触碰任何生产仓库的方案，
   并用 `git status` 验证了 `vendor/sifli`、`packages`、`nuttx`、`apps/external/zblue`
