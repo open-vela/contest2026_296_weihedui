@@ -97,7 +97,7 @@ cd ..
 ./build.sh vendor/openvela/boards/contest2026_296_board/configs/nsh --cmake -j$(nproc)
 ```
 
-产物：`cmake_out/contest2026_296_board_nsh/nuttx.bin`（约 6.5 MB）。
+产物：`cmake_out/contest2026_296_board_nsh/nuttx.bin`（实测 4616140 B，约 4.4 MB）。
 
 > manifest 里的 `<linkfile>` 会把本仓的 `app/smart_lock` 软链到
 > `packages/demos/contest2026_296_smart_lock`、`board/contest_board` 软链到
