@@ -187,12 +187,25 @@ int smart_lock_main(int argc, char *argv[])
         printf("[MAIN] ble_start_advertising failed: %d\n", ret);
     }
 
-    /* 6. AMOLED ç¶ææ¾ç¤ºï¼çº¯éå ï¼å¤±è´¥ä¸å½±åé¨éåè½ï¼ */
+    /* 6. AMOLED 状态显示（纯附加，失败不影响门锁功能） */
 
     ret = display_init();
     if (ret < 0)
     {
         printf("[MAIN] display_init failed: %d (running headless)\n", ret);
+    }
+
+    /* 7. AMOLED 亮度通路自检
+     *
+     * 同样是附加功能：失败不影响门锁逻辑。这里只是把自检结果打进启动
+     * 日志（[PBRT] 前缀），产测时一眼就能看出亮度寄存器是否可用；
+     * 真正的调光由 `agent brightness` 命令触发。
+     */
+
+    ret = panel_brightness_init();
+    if (ret < 0)
+    {
+        printf("[MAIN] panel_brightness_init failed: %d\n", ret);
     }
 
     printf("[MAIN] init done, entering main loop\n");

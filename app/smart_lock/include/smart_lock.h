@@ -26,6 +26,7 @@
 #include "door_sensor.h"    /* 门磁传感器：door_sensor_init() / door_sensor_get_status()        */
 #include "door_control.h"   /* 电机与蜂鸣器：motor_control() / MOTOR_CMD_*                       */
 #include "safety.h"         /* 防夹安全：应用级 radar_result_t / radar_get_status()             */
+#include "panel_brightness.h" /* AMOLED 亮度：panel_brightness_set() / panel_brightness_get()   */
 
 /****************************************************************************
  * BLE 服务接口 (src/ble_service.c)
@@ -58,7 +59,7 @@ uint8_t get_door_state(void);
 /****************************************************************************
  * AI Agent 工具 (src/agent_tools.c)
  *
- * docs/communication/agent_guide.md 约定的五个工具。由 src/agent_main.c 里
+ * docs/communication/agent_guide.md 约定的六个工具。由 src/agent_main.c 里
  * 的 `agent` NSH 命令分发调用；工具各自负责打印 JSON 结果。
  ****************************************************************************/
 
@@ -67,6 +68,7 @@ int     tool_door_sensor_read(int argc, char **argv);
 int     tool_motor_control(int argc, char **argv);
 int     tool_set_timeout(int argc, char **argv);
 int     tool_system_status(int argc, char **argv);
+int     tool_brightness(int argc, char **argv);
 
 /****************************************************************************
  * 应用入口 (src/smart_lock_main.c)
