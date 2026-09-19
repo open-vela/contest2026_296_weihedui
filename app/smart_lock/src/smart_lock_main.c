@@ -30,6 +30,7 @@
 #include <nuttx/config.h>
 
 #include "smart_lock.h"
+#include "display.h"
 
 /****************************************************************************
  * Pre-processor Definitions
@@ -184,6 +185,14 @@ int smart_lock_main(int argc, char *argv[])
     if (ret < 0)
     {
         printf("[MAIN] ble_start_advertising failed: %d\n", ret);
+    }
+
+    /* 6. AMOLED ç¶ææ¾ç¤ºï¼çº¯éå ï¼å¤±è´¥ä¸å½±åé¨éåè½ï¼ */
+
+    ret = display_init();
+    if (ret < 0)
+    {
+        printf("[MAIN] display_init failed: %d (running headless)\n", ret);
     }
 
     printf("[MAIN] init done, entering main loop\n");

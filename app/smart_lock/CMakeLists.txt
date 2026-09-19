@@ -26,6 +26,7 @@ if(CONFIG_SMART_LOCK)
       src/door_control.c
       src/safety.c
       src/ble_service.c
+      src/display.c
       src/smart_lock_main.c
     STACKSIZE 8192
     PRIORITY 100)
@@ -67,5 +68,12 @@ if(CONFIG_SMART_LOCK)
       target_link_libraries(apps_smart_lock PRIVATE zblue_headers)
     endif()
   endif()
+
+  # 诊断用：整屏刷新验证工具，见 src/lcdtest.c 头部说明
+  nuttx_add_application(
+    NAME lcdtest
+    SRCS src/lcdtest.c
+    STACKSIZE 4096
+    PRIORITY 100)
 
 endif()
