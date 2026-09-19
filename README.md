@@ -199,6 +199,17 @@ nsh> agent help                                # 用法
    `agent door_sensor_read` 当前返回 `{"error":"door sensor read failed"}` 即源于此，
    而非接口约定问题。
 
+   这一故障有一个**直接可见的后果**：`src/display.c` 的顶部横幅（`title` / `banner` /
+   `banner_sub`）只由两件事决定 —— 「防夹是否触发」与「门磁锁状态」（见
+   `display_render()` 的 if/else 链）。门磁锁状态永远只能是 `LOCK_STATE_UNKNOWN`，
+   于是必然落到兜底分支。因此实机上屏幕**只会显示**
+   `NO DATA / SENSOR / NOT AVAILABLE` 这一屏，`LOCKED` / `UNLOCKED` / `ALARM`
+   三个分支在现有构建里不可达。
+
+   这不是显示模块的问题：它能正常整屏刷新、按状态换色，亮度调节也已实机验证
+   （见 `docs/communication/agent_guide.md` 第 2.6 节）。复现时若看到灰底
+   `SENSOR / NOT AVAILABLE` 横幅，即对应本条限制，无需怀疑屏幕或亮度通路。
+
 3. **BLE 不随镜像出厂。** `src/ble_service.c` 中完整的 BLE GATT 服务（服务 `0x1820`、
    门状态特征 `0x2B20` 读+通知、控制特征 `0x2B21` 写）代码是完整的，但被
    `#if defined(CONFIG_BT) && defined(CONFIG_UART_BTH4)` 门控；出厂 defconfig 中
