@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <nuttx/config.h>
 
 #include "smart_lock.h"
@@ -205,4 +206,148 @@ int tool_system_status(int argc, char **argv)
     printf("}\n");
 
     return 0;
+}
+
+/**
+ * @brief 屏幕亮度工具
+ *
+ * 调节板载 1.85" AMOLED 的发光亮度（CO5300 0x51 Write Display Brightness）。
+ *
+ * AMOLED 自发光，没有背光电路也没有 BL_PWM 引脚，所以"调光"只能是写面板
+ * 自己的亮度寄存器 —— 实现见 src/panel_brightness.c。
+ *
+ * 用法：
+ *   agent brightness              查询当前亮度与通路状态（不改动面板）
+ *   agent brightness <0-100>      设置亮度
+ *   agent brightness <0-100> force
+ *                                 跳过自检强制写入（诊断用）
+ *   agent brightness diag         只读地转储若干寄存器（诊断用）
+ *
+ * 默认（不带 force）要求启动自检通过：读面板 ID(0x04) 得到 0x331100。
+ * 那一步同时验证了 LCDC 句柄偏移正确、读通路可用。自检不过就不写。
+ *
+ * 注意 readback 字段：本面板未实现 0x52，恒返回 0，**它不表示亮度**。
+ * 这里如实输出但会同时给出 readback_note 说明，避免被误读成验证结果。
+ */
+int tool_brightness(int argc, char **argv)
+{
+    int ret;
+
+    /* diag：只读转储，不写任何寄存器 */
+
+    if (argc >= 2 && strcmp(argv[1], "diag") == 0) {
+        static const struct { uint8_t reg; int len; const char *what; } probe[] = {
+            { 0x04, 3, "panel_id"     },
+            { 0x0A, 1, "power_mode"   },
+            { 0x36, 1, "madctl"       },
+            { 0x3A, 1, "colmod"       },
+            { 0x51, 1, "wbright"      },
+            { 0x52, 1, "rbright"      },
+            { 0x53, 1, "wrctrld"      },
+            { 0x63, 1, "wrhbmdl"      },
+        };
+        size_t i;
+
+        (void)panel_brightness_init();
+        printf("{");
+        for (i = 0; i < sizeof(probe) / sizeof(probe[0]); i++) {
+            int v = panel_brightness_read_reg(probe[i].reg, probe[i].len);
+            printf("%s\"%s\":", i ? "," : "", probe[i].what);
+            if (v >= 0) {
+                printf("\"0x%0*X\"", probe[i].len * 2, (unsigned)v);
+            } else {
+                printf("null");
+            }
+        }
+        printf("}\n");
+        return 0;
+    }
+
+    /* 无参数：只报告，不写面板 */
+
+    if (argc < 2) {
+        char pctbuf[16];
+        char idbuf[16];
+        char rawbuf[16];
+        int  pct;
+        int  id;
+        int  raw;
+
+        ret = panel_brightness_init();
+        pct = panel_brightness_get();
+        id  = panel_brightness_panel_id();
+        raw = panel_brightness_readback();
+
+        if (pct >= 0) {
+            snprintf(pctbuf, sizeof(pctbuf), "%d", pct);
+        } else {
+            snprintf(pctbuf, sizeof(pctbuf), "null");
+        }
+        if (id >= 0) {
+            /* 注意带引号：panel_id 是十六进制字符串，不加引号会输出
+             * "panel_id":0x331100 这种非法 JSON。
+             */
+            snprintf(idbuf, sizeof(idbuf), "\"0x%06X\"", (unsigned)id);
+        } else {
+            snprintf(idbuf, sizeof(idbuf), "null");
+        }
+        if (raw >= 0) {
+            snprintf(rawbuf, sizeof(rawbuf), "%d", raw);
+        } else {
+            snprintf(rawbuf, sizeof(rawbuf), "null");
+        }
+
+        printf("{\"available\":%s,\"verified\":%s,\"panel_id\":%s,"
+               "\"percent\":%s,\"readback\":%s,"
+               "\"readback_note\":\"0x52 mirrors 0x51; equals raw_written after a set\"}\n",
+               panel_brightness_available() ? "true" : "false",
+               panel_brightness_verified() ? "true" : "false",
+               idbuf, pctbuf, rawbuf);
+
+        return ret < 0 ? ret : 0;
+    }
+
+    /* 有参数：设置亮度 */
+
+    {
+        int percent = atoi(argv[1]);
+        bool force = (argc >= 3 && strcmp(argv[2], "force") == 0);
+
+        if (percent < PANEL_BRIGHTNESS_MIN || percent > PANEL_BRIGHTNESS_MAX) {
+            printf("{\"error\":\"invalid brightness (0-100)\"}\n");
+            return -1;
+        }
+
+        ret = force ? panel_brightness_force(percent)
+                    : panel_brightness_set(percent);
+
+        if (ret < 0) {
+            printf("{\"success\":false,\"percent\":%d,\"error\":\"%s\","
+                   "\"verified\":%s}\n",
+                   percent,
+                   ret == -EPERM ? "self-test not passed, retry with 'force'"
+                                 : "panel write failed",
+                   panel_brightness_verified() ? "true" : "false");
+            return ret;
+        }
+
+        /* raw_written 是写进 0x51 的意图值。
+         *
+         * 回读 0x52 本是理想验证手段，但实测发现：DDIC 的寄存器更新有微小
+         * 延迟（约一帧），写完立刻读拿到的是旧值、不是刚写进去的值。这在
+         * 快速连写时尤其明显：brightness 30 → 立即回读 = 127（上电默认值）；
+         * 但几秒后再查 agent brightness → readback = 76，完全正确。
+         *
+         * 因此**不在 set 响应里做即时回读**（它只会引入困惑），改为把回读
+         * 留给显式的查询路径（无参数 agent brightness），那时延迟已过、
+         * 回读是准的。
+         */
+
+        printf("{\"success\":true,\"percent\":%d,\"raw_written\":%d,"
+               "\"forced\":%s}\n",
+               percent, panel_brightness_raw_for(percent),
+               force ? "true" : "false");
+
+        return 0;
+    }
 }
