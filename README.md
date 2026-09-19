@@ -15,7 +15,7 @@
 
 - **雷达 + 门磁双传感器融合**，而不是单纯靠延时或红外——只有「门开着」且「雷达范围内无人」同时成立才触发自动关门，避免把还站在门口的人关在外面。
 - **自动关门超时可运行时调整**（`agent set_timeout <1-300>`），不用重新烧录。
-- **AI Agent 工具化**：五个工具函数 + `agent` NSH 命令，把设备能力暴露成结构化 JSON，便于 AI 助手直接调用。
+- **AI Agent 工具化**：六个工具函数 + `agent` NSH 命令，把设备能力暴露成结构化 JSON，便于 AI 助手直接调用。
 
 ## 二、选题方向
 
@@ -46,7 +46,7 @@ contest2026_296_weihedui/
 │       ├── door_control.c          # 电机与蜂鸣器控制（GPIO + 状态机）
 │       ├── safety.c                # 防夹保护
 │       ├── ble_service.c           # BLE GATT 服务（见「已知限制」）
-│       ├── agent_tools.c           # 五个 AI Agent 工具函数（输出 JSON）
+│       ├── agent_tools.c           # 六个 AI Agent 工具函数（输出 JSON）
 │       └── agent_main.c            # agent 命令的解析与分发
 ├── board/contest_board/
 │   └── configs/nsh/defconfig       # 板级配置：黄山派原始 defconfig + CONFIG_SMART_LOCK*
@@ -117,6 +117,7 @@ nsh> agent radar_check                         # 雷达检测状态
 nsh> agent door_sensor_read                    # 门磁状态
 nsh> agent motor_control open                  # 开门（也可 close/lock/unlock/stop）
 nsh> agent set_timeout 30                      # 自动关门超时改为 30 秒（1-300）
+nsh> agent brightness 50                     # 屏幕亮度调至 50%（0-100）
 nsh> agent help                                # 用法
 ```
 
@@ -159,7 +160,7 @@ nsh> agent help                                # 用法
 - **需求与接口先行**：先由 AI 阅读 `docs/` 下的模块设计文档，梳理出各模块间的
   接口契约，再据此核对代码实现，发现并补齐了多处缺失的模块（统一头文件
   `smart_lock.h`、应用入口 `smart_lock_main.c`、构建脚本 `CMakeLists.txt` 等都属此类）。
-- **死代码排查**：AI 通过分析调用图发现 `agent_tools.c` 的五个工具函数在全仓库
+- **死代码排查**：AI 通过分析调用图发现 `agent_tools.c` 的六个工具函数在全仓库
   **没有任何调用者**，并据此补写了 `agent_main.c` 把 `docs/communication/agent_guide.md`
   中约定的 `agent <tool>` 命令真正实现出来——这五个函数由此从「被链接器
   `--gc-sections` 丢弃」变为真实进入镜像（可用 `System.map` 前后对比验证）。
