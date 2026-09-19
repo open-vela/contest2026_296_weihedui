@@ -10,6 +10,7 @@
  *     agent motor_control open|close|lock|unlock|stop
  *     agent set_timeout <1-300>
  *     agent system_status
+ *     agent brightness [0-100] [force]
  *
  * 但原提交只写了 src/agent_tools.c 里的五个 tool_*() 实现，全仓库没有任何
  * 地方注册命令、也没有任何调用者，因此这五个函数是死代码（即使编进镜像，
@@ -49,6 +50,8 @@ static void agent_usage(void)
     printf("  agent motor_control open|close|lock|unlock|stop  电机控制\n");
     printf("  agent set_timeout <seconds>                      设置自动关门超时(1-300)\n");
     printf("  agent system_status                              完整系统状态\n");
+    printf("  agent brightness [0-100] [force]                 屏幕亮度(无参数=查询)\n");
+    printf("  agent brightness diag                            只读转储面板寄存器\n");
 }
 
 /****************************************************************************
@@ -108,6 +111,11 @@ int agent_main(int argc, char *argv[])
     if (strcmp(tool, "system_status") == 0)
     {
         return tool_system_status(argc - 1, argv + 1);
+    }
+
+    if (strcmp(tool, "brightness") == 0)
+    {
+        return tool_brightness(argc - 1, argv + 1);
     }
 
     if (strcmp(tool, "help") == 0 || strcmp(tool, "-h") == 0)

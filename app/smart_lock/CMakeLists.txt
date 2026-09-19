@@ -26,6 +26,8 @@ if(CONFIG_SMART_LOCK)
       src/door_control.c
       src/safety.c
       src/ble_service.c
+      src/display.c
+      src/panel_brightness.c
       src/smart_lock_main.c
     STACKSIZE 8192
     PRIORITY 100)
@@ -33,7 +35,7 @@ if(CONFIG_SMART_LOCK)
   # AI Agent 工具命令
   #
   # docs/communication/agent_guide.md 约定的 `agent <tool> [args]` 界面：
-  # agent_tools.c 提供五个 tool_*() 实现，agent_main.c 负责解析与分发。
+  # agent_tools.c 提供六个 tool_*() 实现，agent_main.c 负责解析与分发。
   # 两者同属 apps_agent —— agent_tools.c 只被 agent 命令使用，放在这里可以
   # 保证 tool_*() 全仓库只有一个定义。
   #
@@ -67,5 +69,12 @@ if(CONFIG_SMART_LOCK)
       target_link_libraries(apps_smart_lock PRIVATE zblue_headers)
     endif()
   endif()
+
+  # 诊断用：整屏刷新验证工具，见 src/lcdtest.c 头部说明
+  nuttx_add_application(
+    NAME lcdtest
+    SRCS src/lcdtest.c
+    STACKSIZE 4096
+    PRIORITY 100)
 
 endif()
