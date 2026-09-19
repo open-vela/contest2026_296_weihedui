@@ -260,6 +260,11 @@ AMOLED 是自发光器件，模组上没有背光电路，22p QSPI FPC 上也没
 CO5300 的 0x51（Write Display Brightness）。驱动初始化时把 0x51 写成
 0x7F（127/255 ≈ 50%），这也是 `percent` 的默认值 50 的来源。
 
+> 引脚层面的依据见 `docs/hardware/display_lcm.md`：22p QSPI FPC 接口定义（照抄
+> 思澈 wiki 原文）中确实没有 BL_PWM 这一脚，它只出现在 40p RGB FPC 接口上。
+> 思澈 wiki 的《AMOLED屏背光电路》一节也写明 AMOLED「没有像TFT屏一样的背光源……
+> 所以无需专门提供PWM信号来调整背光亮度」，与本模块的实现思路一致。
+
 启动时 `smart_lock_main()` 会先做一次自检：读面板 ID(0x04)，期待得到
 0x331100。自检通过才允许普通写入；未通过时 `agent brightness <n>` 返回
 `{"success":false,...}`，需要加 `force` 才能写入。
