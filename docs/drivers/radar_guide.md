@@ -33,12 +33,18 @@ HLK-LD2410          SF32LB52
 
 | 参数 | 值 |
 |------|-----|
-| 设备路径 | /dev/ttyS1 |
+| 设备路径 | /dev/ttyS0 |
 | 波特率 | 115200 |
 | 数据位 | 8 |
 | 停止位 | 1 |
 | 校验 | 无 |
 | 流控 | 无 |
+
+> **2026-09-19 实机修正**：黄山派上 UART1 已被 NSH 控制台占用（见下方 3.2 的
+> `CONFIG_UART1_SERIAL_CONSOLE=y`），第二个 UART 实例注册为 `/dev/ttyS0`。
+> 本表此前写的 `/dev/ttyS1` **在本板上并不存在**，实测 `radar_init()` 直接返回 `-2`（`ENOENT`）。
+> 已改为 `/dev/ttyS0` 并重新烧录验证：串口可正常打开，帧解析与校验和逻辑完整。
+> 详见 `src/radar_driver.c` 顶部注释与 `README.md` 第六节。
 
 ### 3.2 Kconfig 配置
 
